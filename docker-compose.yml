@@ -1,0 +1,37 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/image/php-fpm/Dockerfile
+    ports:
+      - 11976:9000
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/project/Hoge:cached
+    restart: always
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/image/nginx/Dockerfile
+    ports:
+      - 11977:80
+    depends_on:
+      - app
+    volumes:
+      - ./:/project/Hoge:cached
+    restart: always
+  mysql:
+    image: mysql:5.6
+    ports:
+      - 11978:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "root"
+    volumes:
+      - ./docker/data/mysql:/var/lib/mysql:cached
+      - ./docker/config/mysql:/etc/mysql/conf.d
+    restart: always
+volumes:
+  mysql:
